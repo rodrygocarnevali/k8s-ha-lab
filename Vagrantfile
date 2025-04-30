@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
     end
   
     # Compartilhar a pasta do projeto com a VM para facilitar a edição dentro dela
-    controller.vm.synced_folder ".", "/home/vagrant/k8s-lab"
+    controller.vm.synced_folder ".", "/home/ansible/k8s-lab"
   
     # Instala Ansible automaticamente no provisionamento
     controller.vm.provision "shell", inline: <<-SHELL
@@ -32,9 +32,9 @@ Vagrant.configure("2") do |config|
       sudo -u ansible ssh-keygen -t rsa -b 4096 -f /home/ansible/.ssh/id_rsa -N ""
       
       # Copia a chave pública para a pasta compartilhada
-      sudo mkdir -p /home/vagrant/k8s-lab/keys
-      sudo cp /home/ansible/.ssh/id_rsa.pub /home/vagrant/k8s-lab/keys/id_rsa.pub
-      sudo chown vagrant:vagrant /home/vagrant/k8s-lab/keys/id_rsa.pub
+      sudo mkdir -p /home/ansible/k8s-lab/keys
+      sudo cp /home/ansible/.ssh/id_rsa.pub /home/ansible/k8s-lab/keys/id_rsa.pub
+      sudo chown ansible:ansible /home/ansible/k8s-lab/keys/id_rsa.pub
     SHELL
   end
   
@@ -42,6 +42,8 @@ Vagrant.configure("2") do |config|
     master1.vm.box = "ubuntu/jammy64"
     master1.vm.hostname = "k8s-master1"
     master1.vm.network "private_network", ip: "192.168.56.10"
+
+    master1.vm.synced_folder ".", "/home/ansible/k8s-lab"
   
     master1.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
@@ -52,7 +54,7 @@ Vagrant.configure("2") do |config|
       sudo useradd -m -s /bin/bash ansible
       echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
       sudo mkdir -p /home/ansible/.ssh
-      sudo cp /home/vagrant/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
+      sudo cp /home/ansible/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
       sudo chown ansible:ansible /home/ansible/.ssh -R
       sudo chmod 700 /home/ansible/.ssh
       sudo chmod 600 /home/ansible/.ssh/authorized_keys
@@ -63,6 +65,8 @@ Vagrant.configure("2") do |config|
     master2.vm.box = "ubuntu/jammy64"
     master2.vm.hostname = "k8s-master2"
     master2.vm.network "private_network", ip: "192.168.56.11"
+
+    master2.vm.synced_folder ".", "/home/ansible/k8s-lab"
   
     master2.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
@@ -73,7 +77,7 @@ Vagrant.configure("2") do |config|
       sudo useradd -m -s /bin/bash ansible
       echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
       sudo mkdir -p /home/ansible/.ssh
-      sudo cp /home/vagrant/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
+      sudo cp /home/ansible/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
       sudo chown ansible:ansible /home/ansible/.ssh -R
       sudo chmod 700 /home/ansible/.ssh
       sudo chmod 600 /home/ansible/.ssh/authorized_keys
@@ -84,6 +88,8 @@ Vagrant.configure("2") do |config|
     master3.vm.box = "ubuntu/jammy64"
     master3.vm.hostname = "k8s-master3"
     master3.vm.network "private_network", ip: "192.168.56.12"
+    
+    master3.vm.synced_folder ".", "/home/ansible/k8s-lab"
   
     master3.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
@@ -94,7 +100,7 @@ Vagrant.configure("2") do |config|
       sudo useradd -m -s /bin/bash ansible
       echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
       sudo mkdir -p /home/ansible/.ssh
-      sudo cp /home/vagrant/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
+      sudo cp /home/ansible/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
       sudo chown ansible:ansible /home/ansible/.ssh -R
       sudo chmod 700 /home/ansible/.ssh
       sudo chmod 600 /home/ansible/.ssh/authorized_keys
@@ -105,6 +111,8 @@ Vagrant.configure("2") do |config|
     worker1.vm.box = "ubuntu/jammy64"
     worker1.vm.hostname = "k8s-worker1"
     worker1.vm.network "private_network", ip: "192.168.56.21"
+
+    worker1.vm.synced_folder ".", "/home/ansible/k8s-lab"
   
     worker1.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
@@ -115,7 +123,7 @@ Vagrant.configure("2") do |config|
       sudo useradd -m -s /bin/bash ansible
       echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
       sudo mkdir -p /home/ansible/.ssh
-      sudo cp /home/vagrant/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
+      sudo cp /home/ansible/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
       sudo chown ansible:ansible /home/ansible/.ssh -R
       sudo chmod 700 /home/ansible/.ssh
       sudo chmod 600 /home/ansible/.ssh/authorized_keys
@@ -126,7 +134,9 @@ Vagrant.configure("2") do |config|
     worker2.vm.box = "ubuntu/jammy64"
     worker2.vm.hostname = "k8s-worker2"
     worker2.vm.network "private_network", ip: "192.168.56.22"
-  
+    
+    worker2.vm.synced_folder ".", "/home/ansible/k8s-lab"
+    
     worker2.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
       vb.cpus = 1
@@ -136,7 +146,7 @@ Vagrant.configure("2") do |config|
       sudo useradd -m -s /bin/bash ansible
       echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
       sudo mkdir -p /home/ansible/.ssh
-      sudo cp /home/vagrant/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
+      sudo cp /home/ansible/k8s-lab/keys/id_rsa.pub /home/ansible/.ssh/authorized_keys
       sudo chown ansible:ansible /home/ansible/.ssh -R
       sudo chmod 700 /home/ansible/.ssh
       sudo chmod 600 /home/ansible/.ssh/authorized_keys
