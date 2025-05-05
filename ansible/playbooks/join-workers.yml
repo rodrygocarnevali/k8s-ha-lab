@@ -1,0 +1,8 @@
+---
+- name: Adicionar workers ao cluster
+  hosts: workers
+  become: true
+
+  tasks:
+    - name: Executar comando de join para workers
+      shell: sh /home/ansible/kubeadm_join_command.sh
