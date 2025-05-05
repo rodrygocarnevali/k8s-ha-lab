@@ -1,0 +1,8 @@
+---
+- name: Adicionar demais masters ao cluster
+  hosts: control_planes:!master1
+  become: true
+
+  tasks:
+    - name: Executar comando de join para control-plane
+      shell: sh /home/ansible/kubeadm_join_command.sh
