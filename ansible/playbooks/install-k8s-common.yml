@@ -1,0 +1,29 @@
+- name: Instalar componentes Kubernetes em todos os nós
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Adicionar chave GPG do Kubernetes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Adicionar repositório do Kubernetes
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+
+    - name: Instalar kubelet, kubeadm, e manter versões
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+        state: present
+        update_cache: yes
+
+    - name: Marcar pacotes do Kubernetes como mantidos (não atualiza automaticamente)
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+        state: hold
