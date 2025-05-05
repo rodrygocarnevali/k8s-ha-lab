@@ -1,0 +1,23 @@
+---
+- name: Inicializar cluster Kubernetes no master1
+  hosts: master1
+  become: true
+
+  tasks:
+    - name: Inicializar o cluster com kubeadm
+      command: kubeadm init --control-plane-endpoint "k8s-master1:6443" --upload-certs --pod-network-cidr=10.244.0.0/16
+      register: kubeadm_output
+      ignore_errors: true
+
+    - name: Salvar comandos de join em arquivo
+      copy:
+        dest: /home/ansible/kubeadm_join_command.sh
+        content: |
+          {{ kubeadm_output.stdout_lines | select('search', 'kubeadm join') | list | join('\n') }}
+
+    - name: Configurar kubectl para o usuário ansible
+      become_user: ansible
+      shell: |
+        mkdir -p $HOME/.kube
+        sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        sudo chown ansible:ansible $HOME/.kube/config
