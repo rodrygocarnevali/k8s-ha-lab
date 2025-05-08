@@ -4,5 +4,11 @@
   become: true
 
   tasks:
+    - name: Copiar comando de join de master1
+      copy:
+        src: /home/ansible/kubeadm_join_worker.sh
+        dest: /home/ansible/kubeadm_join_worker.sh
+      delegate_to: master1
+
     - name: Executar comando de join para workers
-      shell: sh /home/ansible/kubeadm_join_command.sh
+      shell: sh /home/ansible/kubeadm_join_worker.sh
