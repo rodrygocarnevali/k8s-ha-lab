@@ -28,23 +28,8 @@
           | select('search', '--control-plane')
           | list
           | first }}
-
-
-    - name: Salvar comandos de join para control-plane em arquivo
-      copy:
-        dest: /home/ansible/kubeadm_join_control_plane.sh
-        content: |
-          {{ kubeadm_output.stdout_lines | select('search', 'kubeadm join') | list | join('\n') }} --control-plane --certificate-key {{ kubeadm_output.stdout_lines | select('search', 'certificate-key') | list | first }}
-
-
-      
-
-    - name: Salvar comandos de join em arquivo
-      copy:
-        dest: /home/ansible/kubeadm_join_command.sh
-        content: |
-          {{ kubeadm_output.stdout_lines | select('search', 'kubeadm join') | list | join('\n') }}
-
+     
+   
     - name: Configurar kubectl para o usuário ansible
       become_user: ansible
       shell: |
