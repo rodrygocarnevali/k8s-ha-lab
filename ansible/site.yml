@@ -1,0 +1,39 @@
+---
+# site.yml - Arquivo principal que orquestra a execução das roles nos grupos de nós específicos
+
+# Para os nós que fazem parte do grupo 'all', que incluem todos os nós, incluindo master, control plane e worker.
+- name: Preparar nós para o Kubernetes
+  hosts: k8s-all-nodes      # Esse grupo pode incluir todos os nós que são configurados com 'containerd', pacotes básicos, etc.
+  become: true
+  gather_facts: true
+
+  roles:
+    - containerd             # Instalando e configurando o containerd (runtime)
+    - k8s-all-node           # Tarefas comuns a todos os nós: desativar swap, instalar pacotes e configurar o kernel
+
+# Para os nós do tipo control plane (Master)
+- name: Configuração do nó master
+  hosts: k8s-master-nodes    # Esse grupo inclui os nós de master (control plane)
+  become: true
+  gather_facts: true
+
+  roles:
+    - k8s-master-node        # Configuração específica do master, como inicializar o cluster com kubeadm
+
+# Para os nós do tipo control plane específico (Cplane)
+- name: Configuração do nó control plane
+  hosts: k8s-cplane-nodes    # Esse grupo inclui os nós control plane adicionais
+  become: true
+  gather_facts: true
+
+  roles:
+    - k8s-cplane-node        # Configuração adicional para o nó control plane, como o kube-scheduler, etc.
+
+# Para os nós do tipo worker
+- name: Configuração dos nós worker
+  hosts: k8s-worker-nodes    # Esse grupo inclui os nós worker do Kubernetes
+  become: true
+  gather_facts: true
+
+  roles:
+    - k8s-worker-node        # Tarefas para os nós workers, como juntar o worker ao cluster Kubernetes
