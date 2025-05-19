@@ -1,0 +1,32 @@
+---
+
+# Versão do Kubernetes desejada
+kubernetes_version: "1.29.0-00"
+
+# Módulos do kernel necessários
+required_modules:
+  - overlay
+  - br_netfilter
+
+# Parâmetros sysctl para habilitar roteamento e bridging
+sysctl_settings:
+  net.bridge.bridge-nf-call-iptables: 1
+  net.bridge.bridge-nf-call-ip6tables: 1
+  net.ipv4.ip_forward: 1
+
+# Pacotes essenciais do sistema
+base_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+
+# Repositório oficial do Kubernetes
+apt_kubernetes_repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+
+# Pacotes do Kubernetes
+kube_packages:
+  - kubelet={{ kubernetes_version }}
+  - kubeadm={{ kubernetes_version }}
+  - kubectl={{ kubernetes_version }}
