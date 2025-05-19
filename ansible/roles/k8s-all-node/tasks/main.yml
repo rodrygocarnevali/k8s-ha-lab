@@ -1,0 +1,66 @@
+---
+
+# a) Atualiza os pacotes do sistema
+- name: Atualizar pacotes do sistema
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+# b) Desativa o swap temporariamente (requisito do kubelet)
+- name: Desativar o swap
+  command: swapoff -a
+
+# c) Remove entradas de swap do fstab (para não reativar após reboot)
+- name: Remover entradas de swap do fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*\sswap\s.*)$'
+    replace: '# \1'
+
+# d) Carrega os módulos do kernel exigidos pelo Kubernetes
+- name: Carregar módulos do kernel
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ required_modules }}"
+
+# e) Aplica parâmetros do sysctl para permitir tráfego de rede entre pods
+- name: Configurar parâmetros do sysctl
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop: "{{ sysctl_settings | dict2items }}"
+
+# f) Instala pacotes utilitários básicos
+- name: Instalar pacotes básicos
+  apt:
+    name: "{{ base_packages }}"
+    state: present
+
+# g) Adiciona chave GPG do repositório do Kubernetes
+- name: Adicionar chave GPG do Kubernetes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+# h) Adiciona o repositório APT do Kubernetes
+- name: Adicionar repositório do Kubernetes
+  apt_repository:
+    repo: "{{ apt_kubernetes_repo }}"
+    state: present
+    filename: kubernetes
+
+# i) Instala kubeadm, kubelet e kubectl
+- name: Instalar kubeadm, kubelet e kubectl
+  apt:
+    name: "{{ kube_packages }}"
+    state: present
+    update_cache: yes
+
+# j) Impede que kubeadm, kubelet e kubectl sejam atualizados automaticamente
+- name: Marcar kubeadm, kubelet e kubectl como "hold"
+  apt:
+    name: "{{ kube_packages }}"
+    state: hold
