@@ -1,0 +1,37 @@
+---
+# Inicializa o cluster Kubernetes com kubeadm no primeiro nó master
+
+- name: Inicializar o cluster com kubeadm
+  command: >
+    kubeadm init
+    --apiserver-advertise-address={{ ansible_host }}
+    --pod-network-cidr={{ pod_network_cidr }}
+    --node-name={{ inventory_hostname }}
+  register: kubeadm_init_output
+  when: inventory_hostname == groups['k8s-master-nodes'][0]
+
+- name: Criar diretório .kube para o usuário ansible
+  file:
+    path: /home/ansible/.kube
+    state: directory
+    owner: ansible
+    group: ansible
+    mode: 0755
+
+- name: Copiar admin.conf para /home/ansible/.kube/config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/ansible/.kube/config
+    remote_src: yes
+    owner: ansible
+    group: ansible
+    mode: 0644
+
+- name: Salvar comando de join (output do kubeadm init)
+  copy:
+    content: "{{ kubeadm_init_output.stdout }}"
+    dest: /home/ansible/kubeadm-init.log
+    owner: ansible
+    group: ansible
+    mode: 0644
+  when: inventory_hostname == groups['k8s-master-nodes'][0]
