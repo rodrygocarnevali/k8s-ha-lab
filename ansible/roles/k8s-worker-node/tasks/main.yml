@@ -1,0 +1,14 @@
+---
+# Executa o join dos worker nodes
+
+- name: Copiar script de join do worker
+  copy:
+    src: worker-join.sh
+    dest: /home/ansible/worker-join.sh
+    owner: ansible
+    group: ansible
+    mode: 0755
+
+- name: Executar script de join do worker
+  command: /home/ansible/worker-join.sh
+  become: true
