@@ -27,11 +27,24 @@
     group: ansible
     mode: 0644
 
-- name: Salvar comando de join (output do kubeadm init)
-  copy:
-    content: "{{ kubeadm_init_output.stdout }}"
-    dest: /home/ansible/kubeadm-init.log
-    owner: ansible
-    group: ansible
-    mode: 0644
+# Gera o comando de join para novos control-plane
+- name: Gerar comando de join para control-plane
+  command: kubeadm token create --print-join-command --control-plane
+  register: control_plane_join_cmd
+  when: inventory_hostname == groups['k8s-master-nodes'][0]
+
+# Gera o comando de join para workers
+- name: Gerar comando de join para worker
+  command: kubeadm token create --print-join-command
+  register: worker_join_cmd
+  when: inventory_hostname == groups['k8s-master-nodes'][0]
+
+# Salva o comando de join do control-plane em ansible/files/control-plane-join.sh
+- name: Salvar comando de join do control-plane em arquivo local
+  local_action: copy content="{{ control_plane_join_cmd.stdout_lines | join('\n') }}" dest="files/control-plane-join.sh" mode=0755
+  when: inventory_hostname == groups['k8s-master-nodes'][0]
+
+# Salva o comando de join do worker em ansible/files/worker-join.sh
+- name: Salvar comando de join do worker em arquivo local
+  local_action: copy content="{{ worker_join_cmd.stdout_lines | join('\n') }}" dest="files/worker-join.sh" mode=0755
   when: inventory_hostname == groups['k8s-master-nodes'][0]
