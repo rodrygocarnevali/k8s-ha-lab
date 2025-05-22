@@ -1,10 +1,10 @@
 ---
 # site.yml - Arquivo principal que orquestra a execução das roles nos grupos de nós específicos
   pre_tasks:
-- name: Adicionar chave pública dos nós ao known_hosts (evita prompts de autenticação)
-  delegate_to: localhost
-  shell: ssh-keyscan -H {{ inventory_hostname }} >> {{ lookup('env','HOME') }}/.ssh/known_hosts
-  run_once: true
+  - name: Adicionar chave pública dos nós ao known_hosts (evita prompts de autenticação)
+    delegate_to: localhost
+    shell: ssh-keyscan -H {{ inventory_hostname }} >> {{ lookup('env','HOME') }}/.ssh/known_hosts
+    run_once: true
 
 # Para os nós que fazem parte do grupo 'all', que incluem todos os nós, incluindo master, control plane e worker.
 - name: Preparar nós para o Kubernetes
