@@ -16,7 +16,7 @@
 
 # c) Gera o arquivo de configuração padrão do containerd
 - name: Gerar arquivo padrão de configuração do containerd
-  command: "containerd config default > /etc/containerd/config.toml"
+  ansible.builtin.shell: "containerd config default > /etc/containerd/config.toml"
   args:
     creates: /etc/containerd/config.toml
 
