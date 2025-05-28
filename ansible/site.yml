@@ -7,10 +7,10 @@
   become: true
   gather_facts: true
 
-  pre_tasks:
-    - name: Adicionar chave pública dos nós ao known_hosts (evita prompts de autenticação)
-      delegate_to: localhost
-      shell: ssh-keyscan -H {{ inventory_hostname }} >> {{ lookup('env','HOME') }}/.ssh/known_hosts
+ # pre_tasks:
+ #   - name: Adicionar chave pública dos nós ao known_hosts (evita prompts de autenticação)
+ #     delegate_to: localhost
+ #     shell: ssh-keyscan -H {{ inventory_hostname }} >> {{ lookup('env','HOME') }}/.ssh/known_hosts
 
   roles:
     - containerd             # Instalando e configurando o containerd (runtime)
