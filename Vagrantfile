@@ -1,14 +1,39 @@
 Vagrant.configure("2") do |config|
+   config.ssh.insert_key = false
   config.vm.define "ansible-controller" do |controller|
     controller.vm.box = "ubuntu/jammy64"
     controller.vm.hostname = "ansible-controller"
     controller.vm.network "private_network", ip: "192.168.56.5"
+
+    # Sincroniza a pasta "key" do projeto para dentro da VM
+    controller.vm.synced_folder "./key", "/vagrant_ssh"
   
     controller.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
       vb.cpus = 1
     end
-  
+     
+
+# Provisionamento: copia chave privada para ~/.ssh/id_rsa e ajusta permissões
+    controller.vm.provision "shell", inline: <<-SHELL
+    echo "Esperando a pasta /vagrant_ssh estar montada..."
+    while [ ! -f /vagrant_ssh/insecure_private_key ]; do sleep 1; done
+    echo "Pasta montada, copiando a chave..."
+    mkdir -p /home/vagrant/.ssh
+    cp /vagrant_ssh/insecure_private_key /home/vagrant/.ssh/id_rsa
+    chmod 600 /home/vagrant/.ssh/id_rsa
+    chown vagrant:vagrant /home/vagrant/.ssh/id_rsa
+    echo "Concluído."
+      # Desativa confirmação de host SSH
+    echo "Host *" > /home/vagrant/.ssh/config
+    echo "   StrictHostKeyChecking no" >> /home/vagrant/.ssh/config
+    echo "   UserKnownHostsFile=/dev/null" >> /home/vagrant/.ssh/config
+    chmod 600 /home/vagrant/.ssh/config
+    chown vagrant:vagrant /home/vagrant/.ssh/config
+    echo "Provisionamento concluído."
+    
+    SHELL
+    
     # Compartilhar a pasta do projeto com a VM para facilitar a edição dentro dela
     controller.vm.synced_folder ".", "/home/vagrant/k8s-lab"
   
@@ -18,6 +43,7 @@ Vagrant.configure("2") do |config|
       sudo apt-get install -y software-properties-common
       sudo apt-add-repository --yes --update ppa:ansible/ansible
       sudo apt-get install -y ansible python3-pip
+
     SHELL
   
     # Cria usuário ansible com sudo sem senha
@@ -28,7 +54,7 @@ Vagrant.configure("2") do |config|
       #sudo chown ansible:ansible /home/ansible/.ssh
       #sudo chmod 700 /home/ansible/.ssh
   
-      # Gera chave SSH para o usuário ansible
+      # Gera chave SSH para o usuário vagra
       #sudo -u ansible ssh-keygen -t rsa -b 4096 -f /home/ansible/.ssh/id_rsa -N ""
       
       # Copia a chave pública para a pasta compartilhada
