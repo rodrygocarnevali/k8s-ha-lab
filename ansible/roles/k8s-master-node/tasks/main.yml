@@ -1,50 +1,66 @@
 ---
-# Inicializa o cluster Kubernetes com kubeadm no primeiro nó master
-
 - name: Inicializar o cluster com kubeadm
   command: >
     kubeadm init
-    --apiserver-advertise-address={{ ansible_host }}
-    --pod-network-cidr={{ pod_network_cidr }}
-    --node-name={{ inventory_hostname }}
-  register: kubeadm_init_output
-  when: inventory_hostname == groups['k8s-master-nodes'][0]
-
-- name: Criar diretório .kube para o usuário ansible
+    --apiserver-cert-extra-sans=192.168.56.10
+    --control-plane-endpoint=192.168.56.10:6443
+    --apiserver-advertise-address=192.168.56.10
+    --pod-network-cidr=192.168.0.0/16
+    --upload-certs
+    
+- name: Criar diretório .kube para o usuário vagrant
   file:
-    path: /home/ansible/.kube
+    path: /home/vagrant/.kube
     state: directory
-    owner: ansible
-    group: ansible
+    owner: vagrant
+    group: vagrant
     mode: 0755
+  become: true  
 
-- name: Copiar admin.conf para /home/ansible/.kube/config
+- name: Copiar admin.conf para /home/vagrant/.kube/config
   copy:
     src: /etc/kubernetes/admin.conf
-    dest: /home/ansible/.kube/config
+    dest: /home/vagrant/.kube/config
     remote_src: yes
-    owner: ansible
-    group: ansible
+    owner: vagrant
+    group: vagrant
     mode: 0644
+  become: true 
 
-# Gera o comando de join para novos control-plane
-- name: Gerar comando de join para control-plane
-  command: kubeadm token create --print-join-command --control-plane
-  register: control_plane_join_cmd
-  when: inventory_hostname == groups['k8s-master-nodes'][0]
+- name: Aplicar a instalação do Calico
+  become_user: vagrant
+  environment:
+    KUBECONFIG: /home/vagrant/.kube/config
+  command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+  become: false
 
-# Gera o comando de join para workers
+- name: Gerar comando de join padrão
+  command: kubeadm token create --print-join-command
+  register: join_cmd_raw
+ 
+- name: Gerar chave de certificado para join de control-plane
+  command: kubeadm init phase upload-certs --upload-certs
+  register: cert_key_raw
+
+- name: Montar comando de join completo para control-plane
+  set_fact:
+    control_plane_join_cmd: "{{ join_cmd_raw.stdout }} --control-plane --certificate-key {{ cert_key_raw.stdout_lines[-1] }}"
+  
+- name: Salvar comando de join do control-plane em arquivo local
+  local_action:
+    module: copy
+    content: "#!/bin/bash\n{{ control_plane_join_cmd }}"
+  
+    dest: files/control-plane-join.sh
+    mode: '0755'
+
 - name: Gerar comando de join para worker
   command: kubeadm token create --print-join-command
   register: worker_join_cmd
-  when: inventory_hostname == groups['k8s-master-nodes'][0]
 
-# Salva o comando de join do control-plane em ansible/files/control-plane-join.sh
-- name: Salvar comando de join do control-plane em arquivo local
-  local_action: copy content="{{ control_plane_join_cmd.stdout_lines | join('\n') }}" dest="files/control-plane-join.sh" mode=0755
-  when: inventory_hostname == groups['k8s-master-nodes'][0]
-
-# Salva o comando de join do worker em ansible/files/worker-join.sh
 - name: Salvar comando de join do worker em arquivo local
-  local_action: copy content="{{ worker_join_cmd.stdout_lines | join('\n') }}" dest="files/worker-join.sh" mode=0755
-  when: inventory_hostname == groups['k8s-master-nodes'][0]
+  local_action:
+    module: copy
+    content: "#!/bin/bash\n{{ worker_join_cmd.stdout }}"
+    dest: files/worker-join.sh
+    mode: '0755'
