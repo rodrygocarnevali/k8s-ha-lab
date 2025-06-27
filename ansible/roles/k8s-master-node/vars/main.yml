@@ -1,6 +1,0 @@
----
-
-# roles/k8s-master-node/vars/main.yml
-
-# Define o range de IPs que será usado para a rede de pods no cluster Kubernetes
-pod_network_cidr: "10.244.0.0/16"
