@@ -1,14 +1,12 @@
 ---
-# Executa o join dos worker nodes
-
 - name: Copiar script de join do worker
   copy:
     src: worker-join.sh
-    dest: /home/ansible/worker-join.sh
-    owner: ansible
-    group: ansible
+    dest: /home/vagrant/worker-join.sh
+    owner: vagrant
+    group: vagrant
     mode: 0755
 
 - name: Executar script de join do worker
-  command: /home/ansible/worker-join.sh
+  command: /home/vagrant/worker-join.sh
   become: true
