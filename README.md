@@ -33,17 +33,45 @@ Provisionar e configurar automaticamente um cluster Kubernetes com:
 
 ```bash
 k8s-ha-lab/
-├── ansible/                # Estrutura do Ansible
-│   ├── files/              # Arquivos estáticos
-│   ├── group_vars/         # Variáveis por grupo de hosts
-│   ├── host_vars/          # Variáveis por host
-│   ├── playbooks/          # Playbooks organizados
-│   ├── roles/              # Roles reutilizáveis do Ansible
-│   ├── templates/          # Arquivos Jinja2 com variáveis
-│   ├── hosts.ini           # Inventário dos hosts do Ansible
-│   └── site.yml            # Playbook principal
-├── Vagrantfile             # Arquivo principal para criação das VMs
-└── README.md               # Este arquivo
+│
+├───ansible
+│   │   hosts.ini
+│   │   site.yml
+│   │
+│   ├
+│   ├───files
+│   └───roles
+│       ├───containerd
+│       │   ├───tasks
+│       │   │       main.yml
+│       │   │
+│       │   └───vars
+│       │           main.yml
+│       │
+│       ├───k8s-all-node
+│       │   ├───tasks
+│       │   │       main.yml
+│       │   │
+│       │   └───vars
+│       │           main.yml
+│       │
+│       ├───k8s-cplane-node
+│       │   ├───tasks
+│       │   │       main.yml
+│       │   │
+│       │   └───vars
+│       ├───k8s-master-node
+│       │   ├───tasks
+│       │   │       main.yml
+│       │   │
+│       │   └───vars
+│       │           main.yml
+│       │
+│       └───k8s-worker-node
+│           ├───tasks
+│           │       main.yml
+│           │
+│           └───vars
 
 ## 🚀 Nota sobre as "Mordomias" do Vagrant
 
@@ -51,5 +79,4 @@ Para simplificação e agilidade neste primeiro projeto, usamos todos os recurso
 
 - **synced_folder**
 - **Geração automática de chaves SSH** 
-- **Integração direta com o VirtualBox** – Não é necessário configurar redes, storage ou VMs manualmente. O Vagrant cuida disso automaticamente.
-
+- **Integração direta com o VirtualBox** 
