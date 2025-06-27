@@ -1,35 +1,69 @@
 ---
+- name: Sincronizar hora com o servidor NTP do Google
+  shell: ntpdate time.google.com
+  become: true
 
-# a) Instala o pacote do containerd
-- name: Instalar containerd
-  apt:
-    name: containerd
+- name: Carregar módulos do kernel
+  modprobe:
+   name: "{{ item }}"
+   state: present
+  loop: "{{ required_modules }}"
+  become: true  
+
+- name: Configurar parâmetros do sysctl
+  sysctl:
+   name: "{{ item.key }}"
+   value: "{{ item.value }}"
+   state: present
+   reload: yes
+  loop: "{{ sysctl_settings | dict2items }}"
+  become: true
+
+- name: Adicionar a chave do repositório APT
+  apt_key:
+   url: https://download.docker.com/linux/ubuntu/gpg
+   state: present
+  become: true
+
+- name: Baixar chave GPG do Docker e salvar direto no trusted.gpg.d
+  ansible.builtin.shell: >
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg |
+    gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
+  args:
+    creates: /etc/apt/trusted.gpg.d/docker.gpg
+  become: true
+
+- name: Adicionar repositório do Docker
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+  become: true
+
+- name: Instalando containerd
+  ansible.builtin.apt:
+    name:
+      - containerd.io
     state: present
     update_cache: yes
+  become: true
 
-# b) Cria o diretório de configuração, se não existir
-- name: Criar diretório de configuração do containerd
-  file:
-    path: /etc/containerd
-    state: directory
-    mode: '0755'
-
-# c) Gera o arquivo de configuração padrão do containerd
-- name: Gerar arquivo padrão de configuração do containerd
-  ansible.builtin.shell: "containerd config default > /etc/containerd/config.toml"
+- name: Gerar config.toml padrão com containerd config default e habilitar CRI
+  ansible.builtin.shell: |
+    containerd config default | tee /etc/containerd/config.toml > /dev/null 2>&1
   args:
-    creates: /etc/containerd/config.toml
+    executable: /bin/bash
+  become: true
 
-# d) Altera o cgroup driver para 'systemd' (obrigatório para o kubelet)
 - name: Ajustar cgroup driver para systemd
   replace:
     path: /etc/containerd/config.toml
     regexp: 'SystemdCgroup = false'
     replace: 'SystemdCgroup = true'
+  become: true
 
-# e) Reinicia e habilita o containerd
 - name: Reiniciar e habilitar o containerd
   systemd:
     name: containerd
     enabled: yes
     state: restarted
+  become: true  
