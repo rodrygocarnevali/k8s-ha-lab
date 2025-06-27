@@ -1,66 +1,56 @@
 ---
-
-# a) Atualiza os pacotes do sistema
 - name: Atualizar pacotes do sistema
   apt:
     update_cache: yes
     upgrade: dist
+  become: true  
 
-# b) Desativa o swap temporariamente (requisito do kubelet)
 - name: Desativar o swap
   command: swapoff -a
+  become: true
 
-# c) Remove entradas de swap do fstab (para não reativar após reboot)
 - name: Remover entradas de swap do fstab
   replace:
     path: /etc/fstab
     regexp: '^([^#].*\sswap\s.*)$'
     replace: '# \1'
+  become: true
 
-# d) Carrega os módulos do kernel exigidos pelo Kubernetes
-- name: Carregar módulos do kernel
-  modprobe:
-    name: "{{ item }}"
-    state: present
-  loop: "{{ required_modules }}"
-
-# e) Aplica parâmetros do sysctl para permitir tráfego de rede entre pods
-- name: Configurar parâmetros do sysctl
-  sysctl:
-    name: "{{ item.key }}"
-    value: "{{ item.value }}"
-    state: present
-    reload: yes
-  loop: "{{ sysctl_settings | dict2items }}"
-
-# f) Instala pacotes utilitários básicos
 - name: Instalar pacotes básicos
   apt:
     name: "{{ base_packages }}"
     state: present
+  become: true
 
-# g) Adiciona chave GPG do repositório do Kubernetes
-- name: Adicionar chave GPG do Kubernetes
-  apt_key:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    state: present
+- name: Criar diretório para armazenar chaves APT, se não existir
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
 
-# h) Adiciona o repositório APT do Kubernetes
-- name: Adicionar repositório do Kubernetes
-  apt_repository:
-    repo: "{{ apt_kubernetes_repo }}"
-    state: present
-    filename: kubernetes
+- name: Baixar a chave pública do Kubernetes via shell
+  ansible.builtin.shell: |
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  become: true
 
-# i) Instala kubeadm, kubelet e kubectl
+- name: Adicionar repositório do Kubernetes via shell
+  ansible.builtin.shell: |
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" > /etc/apt/sources.list.d/kubernetes.list
+  args:
+    creates: /etc/apt/sources.list.d/kubernetes.list
+  become: true
+
+- name: Atualizar cache do APT
+  ansible.builtin.apt:
+    update_cache: yes
+  become: true
+
 - name: Instalar kubeadm, kubelet e kubectl
   apt:
     name: "{{ kube_packages }}"
     state: present
     update_cache: yes
-
-# j) Impede que kubeadm, kubelet e kubectl sejam atualizados automaticamente
-- name: Marcar kubeadm, kubelet e kubectl como "hold"
-  apt:
-    name: "{{ kube_packages }}"
-    state: hold
+  become: true 
