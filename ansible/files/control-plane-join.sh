@@ -1,0 +1,2 @@
+#!/bin/bash
+kubeadm join 192.168.56.10:6443 --token rpc0q9.boqy4duxeef0l8oa --discovery-token-ca-cert-hash sha256:d2743154c547fa7a47f76a7d24b9184971ce58174dd0d9c5eb7ea165fdda6ab3  --control-plane --certificate-key d0b76cdd9a514beea6f045ca34eab59191b56cdea24e91b4d0af1e2356338f6e
