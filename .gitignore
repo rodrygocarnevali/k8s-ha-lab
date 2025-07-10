@@ -1,6 +1,7 @@
 .vagrant/
 *.pem
 *.key
+key/
 keys/
 *.pub
 
