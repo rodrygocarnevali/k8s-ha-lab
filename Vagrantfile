@@ -1,23 +1,34 @@
+    # Define a versão da configuração do Vagrant
 Vagrant.configure("2") do |config|
+
+    # Impede a inserção automática de chaves SSH no processo de inicialização
    config.ssh.insert_key = false
+
+  # ================================
+  # NÓ CONTROLADOR (Ansible)
+  # ================================   
   config.vm.define "ansible-controller" do |controller|
     controller.vm.box = "ubuntu/jammy64"
     controller.vm.hostname = "ansible-controller"
     controller.vm.network "private_network", ip: "192.168.56.5"
 
+    # Monta uma pasta local para a VM com chaves SSH personalizadas
     controller.vm.synced_folder "./key", "/vagrant_ssh"
-  
+
+  # Configuração de recursos da VM (memória e CPU)  
     controller.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
       vb.cpus = 1
     end
 
+# Primeiro provisionamento: atualização e sincronização de horário
     controller.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y ntpdate
     ntpdate time.google.com
     SHELL
-
+    
+ # Segundo provisionamento: cópia da chave SSH para acesso a outros nós
     controller.vm.provision "shell", inline: <<-SHELL
     echo "Esperando a pasta /vagrant_ssh estar montada..."
     while [ ! -f /vagrant_ssh/insecure_private_key ]; do sleep 1; done
