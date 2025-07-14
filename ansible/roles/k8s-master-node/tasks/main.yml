@@ -3,7 +3,7 @@
   command: >
     kubeadm init
     --apiserver-cert-extra-sans=192.168.56.10
-    --control-plane-endpoint=192.168.56.10:6443
+    --control-plane-endpoint=192.168.56.13:6443
     --apiserver-advertise-address=192.168.56.10
     --pod-network-cidr=192.168.0.0/16
     --upload-certs

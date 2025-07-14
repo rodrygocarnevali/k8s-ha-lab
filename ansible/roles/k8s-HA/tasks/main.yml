@@ -1,0 +1,43 @@
+---
+- name: Instala o HAProxy
+  apt:
+    name: haproxy
+    update_cache: yes
+    state: present
+
+- name: Configura o HAProxy diretamente
+  copy:
+    dest: /etc/haproxy/haproxy.cfg
+    content: |
+      global
+        log /dev/log local0
+        maxconn 4096
+        daemon
+
+      defaults
+        log     global
+        mode    tcp
+        timeout connect 10s
+        timeout client  1m
+        timeout server  1m
+
+      frontend kubernetes
+        bind *:6443
+        default_backend kube-apiservers
+
+      backend kube-apiservers
+        balance roundrobin
+        option tcp-check
+        server master1 192.168.56.10:6443 check
+        server master2 192.168.56.11:6443 check
+        server master3 192.168.56.13:6443 check
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart haproxy
+
+- name: Habilita e inicia o HAProxy
+  systemd:
+    name: haproxy
+    enabled: yes
+    state: started
