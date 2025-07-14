@@ -7,7 +7,7 @@
   modprobe:
    name: "{{ item }}"
    state: present
-  loop: "{{ required_modules }}"
+  loop: "{{ modulos_requeridos }}"
   become: true  
 
 - name: Configurar parâmetros do sysctl
@@ -16,7 +16,7 @@
    value: "{{ item.value }}"
    state: present
    reload: yes
-  loop: "{{ sysctl_settings | dict2items }}"
+  loop: "{{ sysctl_config | dict2items }}"
   become: true
 
 - name: Adicionar a chave do repositório APT
