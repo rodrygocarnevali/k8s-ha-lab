@@ -72,11 +72,3 @@ k8s-ha-lab/
 │           │       main.yml
 │           │
 │           └───vars
-
-## 🚀 Nota sobre as "Mordomias" do Vagrant
-
-Para simplificação e agilidade neste primeiro projeto, usamos todos os recursos que facilitam a implantação com o Vagrant:
-
-- **synced_folder**
-- **Geração automática de chaves SSH** 
-- **Integração direta com o VirtualBox** 
