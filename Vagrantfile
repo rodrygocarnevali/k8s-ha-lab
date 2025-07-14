@@ -209,4 +209,34 @@ Vagrant.configure("2") do |config|
       ntpdate time.google.com
     SHELL
   end
+
+  # ================================
+  # LoadBalancer HA
+  # ================================
+  config.vm.define "k8s-ha" do |ha|
+    ha.vm.box = "ubuntu/jammy64"
+    ha.vm.hostname = "k8s-ha"
+    ha.vm.network "private_network", ip: "192.168.56.13"
+
+    # Recursos e configurações avançadas da VM  
+    ha.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+      vb.cpus = 1
+      vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+      vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+      vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
+      vb.customize ["modifyvm", :id, "--audio", "none"]
+      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+    end
+
+    # Atualização e sincronização de horário
+    ha.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y ntpdate
+      ntpdate time.google.com
+    SHELL
+  end
 end
