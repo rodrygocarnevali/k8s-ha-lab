@@ -7,7 +7,15 @@
  
   roles:
     - containerd             
-    - k8s-all-node        
+    - k8s-all-node   
+
+- name: Configuração do nó k8s-HA
+  hosts: loadbalancer
+  become: true
+  gather_facts: true
+
+  roles:
+    - k8s-HA           
 
 - name: Configuração do nó master
   hosts: k8s-master-nodes   
