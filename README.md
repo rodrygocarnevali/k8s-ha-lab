@@ -33,42 +33,49 @@ Provisionar e configurar automaticamente um cluster Kubernetes com:
 
 ```bash
 k8s-ha-lab/
+│   .gitignore
+│   README.md
+│   Vagrantfile
 │
-├───ansible
-│   │   hosts.ini
-│   │   site.yml
-│   │
-│   ├
-│   ├───files
-│   └───roles
-│       ├───containerd
-│       │   ├───tasks
-│       │   │       main.yml
-│       │   │
-│       │   └───vars
-│       │           main.yml
-│       │
-│       ├───k8s-all-node
-│       │   ├───tasks
-│       │   │       main.yml
-│       │   │
-│       │   └───vars
-│       │           main.yml
-│       │
-│       ├───k8s-cplane-node
-│       │   ├───tasks
-│       │   │       main.yml
-│       │   │
-│       │   └───vars
-│       ├───k8s-master-node
-│       │   ├───tasks
-│       │   │       main.yml
-│       │   │
-│       │   └───vars
-│       │           main.yml
-│       │
-│       └───k8s-worker-node
-│           ├───tasks
-│           │       main.yml
-│           │
-│           └───vars
+│
+└───ansible
+    │   hosts.ini
+    │   site.yml
+    │
+    ├───files
+    │       .gitkeep
+    │     
+    │
+    └───roles
+        ├───containerd
+        │   ├───tasks
+        │   │       main.yml
+        │   │
+        │   └───vars
+        │           main.yml
+        │
+        ├───k8s-all-node
+        │   ├───tasks
+        │   │       main.yml
+        │   │
+        │   └───vars
+        │           main.yml
+        │
+        ├───k8s-cplane-node
+        │   └───tasks
+        │           main.yml
+        │
+        ├───k8s-HA
+        │   └───tasks
+        │           main.yml
+        │
+        ├───k8s-master-node
+        │   ├───tasks
+        │   │       main.yml
+        │   │
+        │   └───vars
+        │           main.yml
+        │
+        └───k8s-worker-node
+            └───tasks
+                    main.yml
