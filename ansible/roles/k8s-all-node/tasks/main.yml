@@ -54,3 +54,17 @@
     state: present
     update_cache: yes
   become: true 
+
+- name: Configurar kubelet com IP correto do node
+  copy:
+    dest: /etc/default/kubelet
+    content: |
+      KUBELET_EXTRA_ARGS=--node-ip={{ ansible_host }}
+  become: true
+
+- name: Reiniciar kubelet
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: true
+  become: true

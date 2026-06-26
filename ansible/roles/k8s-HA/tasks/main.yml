@@ -1,9 +1,14 @@
 ---
+- name: Sincronizar hora com o servidor NTP do Google
+  shell: ntpdate time.google.com
+  become: true
+
 - name: Instala o HAProxy
   apt:
     name: haproxy
     update_cache: yes
     state: present
+    lock_timeout: 600
 
 - name: Configura o HAProxy diretamente
   copy:
@@ -34,10 +39,10 @@
     owner: root
     group: root
     mode: '0644'
-  notify: restart haproxy
+  
 
-- name: Habilita e inicia o HAProxy
+- name: Reinicia o HAProxy para aplicar a nova configuração
   systemd:
     name: haproxy
+    state: restarted
     enabled: yes
-    state: started

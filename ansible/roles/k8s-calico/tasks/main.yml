@@ -1,0 +1,6 @@
+- name: Aplicar a instalação do Calico
+  become_user: vagrant
+  environment:
+    KUBECONFIG: /home/vagrant/.kube/config
+  command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+  become: false

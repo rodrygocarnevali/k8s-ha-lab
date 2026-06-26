@@ -1,8 +1,10 @@
 # Define a versão da configuração do Vagrant
 Vagrant.configure("2") do |config|
-
+  #coloca um time maior pra deixar a vm iniciar antes do acesso ssh
+  config.vm.boot_timeout = 600
   # Impede a inserção automática de chaves SSH no processo de inicialização
   config.ssh.insert_key = false
+  
 
   # ================================
   # NÓ CONTROLADOR (Ansible)
@@ -72,14 +74,19 @@ Vagrant.configure("2") do |config|
     master1.vm.provider "virtualbox" do |vb|
       vb.memory = 2048
       vb.cpus = 2
-      vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
-      vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
-      vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
-      vb.customize ["modifyvm", :id, "--audio", "none"]
-      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
-      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      vb.gui = false
+         #vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+      #vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+      #vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+      #vb.customize ["modifyvm", :id, "--vram", "16"]
+      #vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
+     # vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
+      #vb.customize ["modifyvm", :id, "--audio", "none"]
+      #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      #vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+     # vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+     # vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+     
     end
 
     # Atualização e sincronização de horário
@@ -102,14 +109,18 @@ Vagrant.configure("2") do |config|
     master2.vm.provider "virtualbox" do |vb|
       vb.memory = 2048
       vb.cpus = 2
-      vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
-      vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
-      vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
-      vb.customize ["modifyvm", :id, "--audio", "none"]
-      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
-      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      vb.gui = false
+      #vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+      #vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+      #vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+      #vb.customize ["modifyvm", :id, "--vram", "16"]
+      #vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
+     # vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
+      #vb.customize ["modifyvm", :id, "--audio", "none"]
+      #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      #vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+     # vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+     # vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
     end
 
     # Atualização e sincronização de horário
@@ -132,14 +143,18 @@ Vagrant.configure("2") do |config|
     master3.vm.provider "virtualbox" do |vb|
       vb.memory = 2048
       vb.cpus = 2
-      vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
-      vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
-      vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
-      vb.customize ["modifyvm", :id, "--audio", "none"]
-      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
-      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      vb.gui = false
+        #vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+      #vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+      #vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+      #vb.customize ["modifyvm", :id, "--vram", "16"]
+      #vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
+     # vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
+      #vb.customize ["modifyvm", :id, "--audio", "none"]
+      #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      #vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+     # vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+     # vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
     end
 
     # Atualização e sincronização de horário
@@ -160,16 +175,20 @@ Vagrant.configure("2") do |config|
 
     # Recursos e configurações avançadas da VM
     worker1.vm.provider "virtualbox" do |vb|
-      vb.memory = 1024
-      vb.cpus = 1
-      vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
-      vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
-      vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
-      vb.customize ["modifyvm", :id, "--audio", "none"]
-      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
-      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      vb.memory = 2048
+      vb.cpus = 2
+      vb.gui = false
+            #vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+      #vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+      #vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+      #vb.customize ["modifyvm", :id, "--vram", "16"]
+      #vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
+     # vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
+      #vb.customize ["modifyvm", :id, "--audio", "none"]
+      #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      #vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+     # vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+     # vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
     end
 
     # Atualização e sincronização de horário
@@ -190,16 +209,20 @@ Vagrant.configure("2") do |config|
 
     # Recursos e configurações avançadas da VM  
     worker2.vm.provider "virtualbox" do |vb|
-      vb.memory = 1024
-      vb.cpus = 1
-      vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
-      vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
-      vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
-      vb.customize ["modifyvm", :id, "--audio", "none"]
-      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
-      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      vb.memory = 2048
+      vb.cpus = 2
+      vb.gui = false
+         #vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+      #vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+      #vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+      #vb.customize ["modifyvm", :id, "--vram", "16"]
+      #vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
+     # vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
+      #vb.customize ["modifyvm", :id, "--audio", "none"]
+      #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      #vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+     # vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+     # vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
     end
 
     # Atualização e sincronização de horário
@@ -222,14 +245,18 @@ Vagrant.configure("2") do |config|
     ha.vm.provider "virtualbox" do |vb|
       vb.memory = 1024
       vb.cpus = 1
-      vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
-      vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
-      vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
-      vb.customize ["modifyvm", :id, "--audio", "none"]
-      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
-      vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
-      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      vb.gui = false
+      #vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+      #vb.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+      #vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+      #vb.customize ["modifyvm", :id, "--vram", "16"]
+      #vb.customize ["modifyvm", :id, "--cpuhotplug","on"]
+     # vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
+      #vb.customize ["modifyvm", :id, "--audio", "none"]
+      #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      #vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+     # vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+     # vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
     end
 
     # Atualização e sincronização de horário

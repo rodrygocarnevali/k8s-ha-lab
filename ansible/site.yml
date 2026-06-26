@@ -39,4 +39,12 @@
   gather_facts: true
 
   roles:
-    - k8s-worker-node        
+    - k8s-worker-node       
+
+- name: Configuração do calico no master
+  hosts: k8s-master-nodes   
+  become: true
+  gather_facts: true
+
+  roles:
+    - k8s-calico     
