@@ -245,7 +245,7 @@ O Vagrant sincroniza automaticamente a pasta do projeto com a máquina virtual.
 Dentro do `ansible-controller`, acesse:
 
 ```bash
-cd /vagrant/ansible
+cd /k8s-ha-lab/ansible
 ```
 
 Verifique os arquivos disponíveis:
