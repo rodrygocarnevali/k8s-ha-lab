@@ -755,3 +755,151 @@ Algumas melhorias implementadas ao longo da evolução:
 - Implementação de um Load Balancer (HAProxy) para o Control Plane;
 - Automatização da configuração do kubelet utilizando o inventário do Ansible (`hosts.ini`);
 - Integração da instalação do Calico ao fluxo de provisionamento.
+
+## 🚀 Execução do Playbook
+
+Após a criação das máquinas virtuais pelo Vagrant, o ambiente é configurado automaticamente através do Ansible. O playbook instala e configura todos os componentes necessários para o funcionamento do cluster Kubernetes High Availability.
+
+**Comando executado:**
+
+```bash
+ansible-playbook site.yml -i hosts.ini
+```
+
+![Execução do Playbook](assets/images/ansible-playbook-execution.png)
+
+## 📌 Validação do Cluster Kubernetes HA
+
+### 🔹 Verificação dos Nodes
+
+Validação do estado do cluster Kubernetes, confirmando que os três nós Control Plane e os dois Workers estão operando normalmente.
+
+```bash
+kubectl get nodes
+```
+
+![Verificação dos Nodes](assets/images/01-kubectl-get-nodes.png)
+
+---
+
+### 🔹 Informações Detalhadas dos Nodes
+
+Exibe informações adicionais dos nós, como endereços IP, sistema operacional, versão do Kubernetes e runtime de containers.
+
+```bash
+kubectl get nodes -o wide
+```
+
+![Informações dos Nodes](assets/images/02-kubectl-get-nodes-wide.png)
+
+---
+
+### 🔹 Componentes do Kubernetes
+
+Lista todos os componentes essenciais do cluster em execução no namespace **kube-system**, incluindo API Server, etcd, Scheduler, Controller Manager, CoreDNS e Calico.
+
+```bash
+kubectl get pods -n kube-system
+```
+
+![Pods do kube-system](assets/images/03-kube-system-pods.png)
+
+---
+
+### 🔹 Serviços do Cluster
+
+Exibe os serviços internos responsáveis pela comunicação entre os componentes do Kubernetes.
+
+```bash
+kubectl get svc -A
+```
+
+![Serviços do Cluster](assets/images/04-services.png)
+
+---
+
+## 🚀 Deploy da Aplicação
+
+### 🔹 Criação do Deployment
+
+Criação de um Deployment utilizando a imagem oficial do Nginx.
+
+```bash
+kubectl create deployment nginx --image=nginx
+```
+
+![Criação do Deployment](assets/images/05-create-deployment.png)
+
+---
+
+### 🔹 Verificação do Pod
+
+Confirma que o Pod criado pelo Deployment foi iniciado com sucesso e identifica o nó onde a aplicação está sendo executada.
+
+```bash
+kubectl get pods -o wide
+```
+
+![Pod do Nginx](assets/images/07-get-pods.png)
+
+---
+
+### 🔹 Exposição da Aplicação
+
+Criação de um Service do tipo **NodePort**, permitindo acesso externo à aplicação.
+
+```bash
+kubectl expose deployment nginx --port=80 --type=NodePort
+```
+
+![Expose Deployment](assets/images/08-expose-deployment.png)
+
+---
+
+### 🔹 Verificação do Service
+
+Exibe o Service criado e a porta NodePort disponibilizada para acesso à aplicação.
+
+```bash
+kubectl get svc
+```
+
+![Service NodePort](assets/images/09-get-services.png)
+
+---
+
+### 🔹 Teste da Aplicação
+
+Validação do acesso à aplicação através do Service criado.
+
+```bash
+curl http://<CLUSTER_IP>
+```
+
+![Teste da Aplicação](assets/images/10-curl-nginx.png)
+
+---
+
+## 🔍 Informações do Cluster
+
+### 🔹 Informações Gerais
+
+Exibe o endereço do Control Plane e os principais serviços do cluster.
+
+```bash
+kubectl cluster-info
+```
+
+![Cluster Info](assets/images/10-cluster-info.png)
+
+---
+
+### 🔹 Versão do Kubernetes
+
+Exibe as versões do cliente (`kubectl`) e do servidor Kubernetes.
+
+```bash
+kubectl version
+```
+
+![Versão do Kubernetes](assets/images/11-kubernetes-version.png)
