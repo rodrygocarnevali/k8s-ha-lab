@@ -173,7 +173,7 @@ Esta seção descreve o processo completo para criar o laboratório desde o iní
 Clone o repositório:
 
 ```bash
-git clone https://github.com/SEU_USUARIO/k8s-ha-lab.git
+git clone https://github.com/rodrygocarnevali/k8s-ha-lab.git
 ```
 
 Entre na pasta do projeto:
